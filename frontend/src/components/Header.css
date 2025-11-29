@@ -1,0 +1,62 @@
+.app-header {
+  background-color: #2f3136;
+  border-bottom: 1px solid #202225;
+  padding: 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  margin: 0;
+  color: #dcddde;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: #b9bbbe;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: #36393f;
+  color: #dcddde;
+}
+
+.nav-link.active {
+  background-color: #3ba55d;
+  color: white;
+}
+
+.nav-link.active:hover {
+  background-color: #2d7d46;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .header-nav {
+    justify-content: center;
+  }
+}

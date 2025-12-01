@@ -14,7 +14,8 @@
     },
     "[javascript]": {
       "editor.defaultFormatter": "biomejs.biome"
-    }
+    },
+    "files.autoSave": "onWindowChange"
   },
   "extensions": {
     "recommendations": ["biomejs.biome"]

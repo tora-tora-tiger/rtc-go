@@ -57,9 +57,14 @@ func (h *WebSocketHandler) Listen() {
 			continue
 		}
 
-		if eventType, ok := event["type"].(string); ok {
+		eventType, okType := event["type"].(string)
+		eventData, okData := event["data"]
+
+		if okType && okData {
 			if handler, exists := h.messageHandlers[eventType]; exists {
-				handler(message)
+				// eventData is interface{}, handler expects []byte (JSON)
+				dataBytes, _ := json.Marshal(eventData)
+				handler(dataBytes)
 			}
 		}
 	}

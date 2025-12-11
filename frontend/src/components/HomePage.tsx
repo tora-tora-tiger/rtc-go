@@ -26,6 +26,9 @@ export const HomePage: React.FC = () => {
               </Link>
             </div>
           </div>
+          <Link to="/debug" className="demo-button primary">
+            デバッグページへ
+          </Link>
         </div>
       </div>
     </div>

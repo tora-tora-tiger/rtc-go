@@ -9,7 +9,9 @@ import {
 import { Header } from "./components/Header";
 import { HomePage } from "./components/HomePage";
 import { ScreenShare } from "./components/ScreenShare";
+import DebugChat from "./components/DebugChat";
 import "./App.css";
+
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -20,7 +22,6 @@ const AppContent: React.FC = () => {
     isDeafened: false,
   });
 
-  
   const [participants, setParticipants] = useState<Participant[]>([
     {
       id: "1",
@@ -56,32 +57,31 @@ const AppContent: React.FC = () => {
     isScreenSharing: mediaControls.isScreenSharing,
   };
 
-  
   // イベントハンドラー
   const handleToggleMute = () => {
-    setMediaControls(prev => ({ ...prev, isMuted: !prev.isMuted }));
+    setMediaControls((prev) => ({ ...prev, isMuted: !prev.isMuted }));
   };
 
   const handleToggleVideo = () => {
-    setMediaControls(prev => ({ ...prev, isVideoOn: !prev.isVideoOn }));
+    setMediaControls((prev) => ({ ...prev, isVideoOn: !prev.isVideoOn }));
   };
 
   const handleToggleScreenShare = () => {
-    setMediaControls(prev => ({
+    setMediaControls((prev) => ({
       ...prev,
       isScreenSharing: !prev.isScreenSharing,
     }));
 
     // 画面共有が停止されたら、共有中の参加者をリセット
     if (mediaControls.isScreenSharing) {
-      setParticipants(prev =>
-        prev.map(p => ({ ...p, isScreenSharing: false })),
+      setParticipants((prev) =>
+        prev.map((p) => ({ ...p, isScreenSharing: false }))
       );
     }
   };
 
   const handleToggleDeafen = () => {
-    setMediaControls(prev => ({ ...prev, isDeafened: !prev.isDeafened }));
+    setMediaControls((prev) => ({ ...prev, isDeafened: !prev.isDeafened }));
   };
 
   // 現在のページを判定
@@ -116,6 +116,7 @@ const AppContent: React.FC = () => {
             />
           }
         />
+        <Route path="/debug" element={<DebugChat />} />
       </Routes>
     </div>
   );

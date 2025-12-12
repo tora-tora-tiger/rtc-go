@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pion/webrtc/v4"
 	"github.com/wailsapp/wails/v2/pkg/logger"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -250,6 +251,8 @@ func (a *App) Startup(ctx context.Context) {
 
 		dc.OnMessage(func(msg webrtc.DataChannelMessage) {
 			a.logger.Debug(fmt.Sprintf("Received message on external data channel: %s", string(msg.Data)))
+			runtime.EventsEmit(a.ctx, "chat-message", msg)
+		
 			// Echo message back to WebSocket for debugging
 			a.wsHandler.Emit("chat-message", map[string]string{
 				"message": string(msg.Data),
@@ -271,7 +274,7 @@ func (a *App) Startup(ctx context.Context) {
 			if err != nil {
 				a.logger.Error(fmt.Sprintf("Error sending ICE candidate: %s", err.Error()))
 			} else {
-				a.logger.Debug("Sent IrCE candidate")
+				a.logger.Debug("Sent ICE candidate")
 			}
 		}
 	})

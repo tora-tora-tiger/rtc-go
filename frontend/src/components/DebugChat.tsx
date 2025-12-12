@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { JoinRoom, SendChatMessage } from "../../wailsjs/go/backend/App";
+import { EventsOn } from "../../wailsjs/runtime/runtime";
 
 interface Message {
   id: string;
@@ -10,6 +11,16 @@ interface Message {
 }
 
 interface DebugChatProps {}
+
+type DataChannelMessage =
+  | {
+      IsString: true;
+      Data: string;
+    }
+  | {
+      IsString: false;
+      Data: Blob;
+    };
 
 const DebugChat: React.FC<DebugChatProps> = () => {
   const [roomName, setRoomName] = useState<string>("test-room");
@@ -24,10 +35,26 @@ const DebugChat: React.FC<DebugChatProps> = () => {
   };
 
   useEffect(() => {
+    // chat-messageイベントリスナーを設定
+    EventsOn("chat-message", (msg: DataChannelMessage) => {
+      console.log("📨 chat-message受信:", msg);
+      if (msg.IsString) {
+        addMessage(msg.Data, "chat", "相手");
+      } else {
+        addMessage("[バイナリデータ受信]", "system");
+      }
+    });
+  }, []); // 空の配列で初回のみ実行
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const addMessage = (content: string, type: "chat" | "system" = "system", sender: string = "システム") => {
+  const addMessage = (
+    content: string,
+    type: "chat" | "system" = "system",
+    sender: string = "システム"
+  ) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       sender,
@@ -38,7 +65,6 @@ const DebugChat: React.FC<DebugChatProps> = () => {
     setMessages((prev) => [...prev, newMessage]);
   };
 
-  
   const handleJoinRoom = async () => {
     try {
       addMessage(`ルーム「${roomName}」に参加中...`, "system");
@@ -77,7 +103,7 @@ const DebugChat: React.FC<DebugChatProps> = () => {
     return date.toLocaleTimeString("ja-JP", {
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit"
+      second: "2-digit",
     });
   };
 
@@ -87,7 +113,12 @@ const DebugChat: React.FC<DebugChatProps> = () => {
         <h2>WebRTC デバッグチャット</h2>
         <div style={styles.statusContainer}>
           <span style={styles.status}>状態: {connectionStatus}</span>
-          <span style={{ ...styles.indicator, backgroundColor: isConnected ? "#4CAF50" : "#f44336" }}></span>
+          <span
+            style={{
+              ...styles.indicator,
+              backgroundColor: isConnected ? "#4CAF50" : "#f44336",
+            }}
+          ></span>
         </div>
       </div>
 
@@ -103,7 +134,10 @@ const DebugChat: React.FC<DebugChatProps> = () => {
           <button
             onClick={handleJoinRoom}
             disabled={isConnected}
-            style={{ ...styles.button, backgroundColor: isConnected ? "#ccc" : "#4CAF50" }}
+            style={{
+              ...styles.button,
+              backgroundColor: isConnected ? "#ccc" : "#4CAF50",
+            }}
           >
             ルーム参加
           </button>
@@ -117,12 +151,16 @@ const DebugChat: React.FC<DebugChatProps> = () => {
               key={message.id}
               style={{
                 ...styles.message,
-                ...(message.type === "chat" ? styles.chatMessage : styles.systemMessage)
+                ...(message.type === "chat"
+                  ? styles.chatMessage
+                  : styles.systemMessage),
               }}
             >
               <div style={styles.messageHeader}>
                 <span style={styles.sender}>{message.sender}</span>
-                <span style={styles.timestamp}>{formatTime(message.timestamp)}</span>
+                <span style={styles.timestamp}>
+                  {formatTime(message.timestamp)}
+                </span>
               </div>
               <div style={styles.messageContent}>{message.content}</div>
             </div>
@@ -136,12 +174,16 @@ const DebugChat: React.FC<DebugChatProps> = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={isConnected ? "メッセージを入力..." : "先にルームに参加してください"}
+            placeholder={
+              isConnected
+                ? "メッセージを入力..."
+                : "先にルームに参加してください"
+            }
             disabled={!isConnected}
             style={{
               ...styles.messageInput,
               backgroundColor: isConnected ? "#fff" : "#f5f5f5",
-              cursor: isConnected ? "text" : "not-allowed"
+              cursor: isConnected ? "text" : "not-allowed",
             }}
           />
           <button
@@ -149,7 +191,8 @@ const DebugChat: React.FC<DebugChatProps> = () => {
             disabled={!isConnected || !inputMessage.trim()}
             style={{
               ...styles.sendButton,
-              backgroundColor: (isConnected && inputMessage.trim()) ? "#2196F3" : "#ccc"
+              backgroundColor:
+                isConnected && inputMessage.trim() ? "#2196F3" : "#ccc",
             }}
           >
             送信
